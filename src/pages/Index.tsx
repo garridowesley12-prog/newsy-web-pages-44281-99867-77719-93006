@@ -7,6 +7,19 @@ import { Search } from "lucide-react";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
 
+// YouTube embed component for articles
+const YouTubeEmbed = ({ videoId }: { videoId: string }) => (
+  <div className="relative w-full aspect-video rounded overflow-hidden my-4 border border-border">
+    <iframe
+      src={`https://www.youtube.com/embed/${videoId}`}
+      title="YouTube video player"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+      className="absolute top-0 left-0 w-full h-full"
+    />
+  </div>
+);
+
 // Article column data - unique articles for each column
 const articleColumns = [
   {
@@ -35,6 +48,18 @@ const articleColumns = [
           "The proposed regulations would fundamentally reshape how tech companies operate, introducing strict requirements for data transparency and user consent."
         ],
         minHeight: "350px"
+      },
+      {
+        category: "Technology",
+        categoryColor: "accent" as const,
+        title: "Revolutionary AI Model Transforms Creative Industries",
+        author: "Alex Thompson",
+        content: [
+          "A groundbreaking artificial intelligence system is reshaping how creative professionals work, offering unprecedented capabilities in content generation and design assistance.",
+          "Industry experts demonstrate the technology's potential in this exclusive presentation, showcasing real-world applications across multiple creative fields."
+        ],
+        videoId: "dQw4w9WgXcQ",
+        minHeight: "550px"
       },
       {
         category: "Local",
@@ -439,6 +464,9 @@ const Index = () => {
                               {paragraph}
                             </p>
                           ))}
+                          {'videoId' in article && article.videoId && (
+                            <YouTubeEmbed videoId={article.videoId} />
+                          )}
                         </article>
                         {idx < column.articles.length - 1 && <Separator className="my-6" />}
                       </div>
