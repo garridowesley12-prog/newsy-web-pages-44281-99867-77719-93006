@@ -528,242 +528,59 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Trending Now Column - Always Visible */}
-        <ScrollArea className="article-container h-full w-80">
-          <div className="p-8 auto-scroll-down">
-            <div className="pb-8">
-            {/* Hot sidebar item */}
-            <Card className="p-4 mb-6 bg-muted border-2 border-border min-h-[400px]">
-              <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2">
-                TRENDING NOW
-              </h4>
-              <ul className="space-y-3">
-                {[
-                  "Market Analysis: What Investors Need to Know",
-                  "Education Reform: New Proposals Emerge",
-                  "Sports: Championship Finals Preview",
-                  "Arts & Culture: Museum Exhibition Opens",
-                  "Science: Breakthrough in Medical Research",
-                  "Housing Market Shows Unexpected Growth",
-                  "International Trade Agreements Updated"
-                ].map((item, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="font-headline font-bold text-lg mr-3">{index + 1}.</span>
-                    <span className="text-sm font-body leading-tight">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-
-            {/* Regular topic */}
-            <article 
-              className="mb-6 p-4 border-2 border-border min-h-[250px]"
-              onMouseEnter={(e) => {
-                const articleElement = e.currentTarget;
-                const scrollContainer = articleElement.closest('.article-container');
-                if (scrollContainer) {
-                  const containerRect = scrollContainer.getBoundingClientRect();
-                  const articleRect = articleElement.getBoundingClientRect();
-                  const scrollTop = scrollContainer.scrollTop;
-                  const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                  scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                }
-              }}
-            >
-              <Badge className="mb-2 bg-accent text-accent-foreground font-body uppercase text-xs">
-                Opinion
-              </Badge>
-              <h4 className="font-headline font-bold text-lg leading-tight mb-2">
-                The Path Forward: Reimagining Economic Policy
-              </h4>
-              <p className="text-xs font-body leading-relaxed text-muted-foreground mb-2">
-                By Editorial Board
-              </p>
-              <p className="text-xs font-body leading-relaxed">
-                Recent events demand a fundamental reassessment of our approach to fiscal policy...
-              </p>
-            </article>
-
-            <Separator className="my-6" />
-
-            {/* Less hot topic */}
-            <article 
-              className="mb-6 p-4 border-2 border-border min-h-[180px]"
-              onMouseEnter={(e) => {
-                const articleElement = e.currentTarget;
-                const scrollContainer = articleElement.closest('.article-container');
-                if (scrollContainer) {
-                  const containerRect = scrollContainer.getBoundingClientRect();
-                  const articleRect = articleElement.getBoundingClientRect();
-                  const scrollTop = scrollContainer.scrollTop;
-                  const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                  scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                }
-              }}
-            >
-              <Badge className="mb-2 bg-secondary text-secondary-foreground font-body uppercase text-xs">
-                Culture
-              </Badge>
-              <h4 className="font-headline font-bold text-lg leading-tight mb-2">
-                Art Gallery Reopens After Renovation
-              </h4>
-              <p className="text-xs font-body leading-relaxed text-muted-foreground mb-2">
-                By Arts Desk
-              </p>
-              <p className="text-xs font-body leading-relaxed">
-                New exhibition spaces feature contemporary works...
-              </p>
-            </article>
-
-            <Separator className="my-6" />
-
-            {/* Hot topic */}
-            <article 
-              className="mb-6 p-4 border-2 border-border min-h-[350px]"
-              onMouseEnter={(e) => {
-                const articleElement = e.currentTarget;
-                const scrollContainer = articleElement.closest('.article-container');
-                if (scrollContainer) {
-                  const containerRect = scrollContainer.getBoundingClientRect();
-                  const articleRect = articleElement.getBoundingClientRect();
-                  const scrollTop = scrollContainer.scrollTop;
-                  const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                  scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                }
-              }}
-            >
-              <Badge className="mb-2 bg-secondary text-secondary-foreground font-body uppercase text-xs">
-                Sports
-              </Badge>
-              <h4 className="font-headline font-bold text-lg leading-tight mb-2">
-                Championship Game Ends in Dramatic Fashion
-              </h4>
-              <p className="text-xs font-body leading-relaxed text-muted-foreground mb-2">
-                By Sports Staff
-              </p>
-              <p className="text-xs font-body leading-relaxed mb-3">
-                Last-minute heroics seal victory in thrilling finale watched by millions...
-              </p>
-              <p className="text-xs font-body leading-relaxed">
-                The game will be remembered as one of the greatest in the sport's history.
-              </p>
-            </article>
-            {/* Duplicate content for seamless loop */}
-            <Card className="p-4 mb-6 bg-muted border-2 border-border min-h-[400px]">
-              <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2">
-                TRENDING NOW
-              </h4>
-              <ul className="space-y-3">
-                {[
-                  "Market Analysis: What Investors Need to Know",
-                  "Education Reform: New Proposals Emerge",
-                  "Sports: Championship Finals Preview",
-                  "Arts & Culture: Museum Exhibition Opens",
-                  "Science: Breakthrough in Medical Research",
-                  "Housing Market Shows Unexpected Growth",
-                  "International Trade Agreements Updated"
-                ].map((item, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="font-headline font-bold text-lg mr-3">{index + 1}.</span>
-                    <span className="text-sm font-body leading-tight">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-
-            <article 
-              className="mb-6 p-4 border-2 border-border min-h-[250px]"
-              onMouseEnter={(e) => {
-                const articleElement = e.currentTarget;
-                const scrollContainer = articleElement.closest('.article-container');
-                if (scrollContainer) {
-                  const containerRect = scrollContainer.getBoundingClientRect();
-                  const articleRect = articleElement.getBoundingClientRect();
-                  const scrollTop = scrollContainer.scrollTop;
-                  const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                  scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                }
-              }}
-            >
-              <Badge className="mb-2 bg-accent text-accent-foreground font-body uppercase text-xs">
-                Opinion
-              </Badge>
-              <h4 className="font-headline font-bold text-lg leading-tight mb-2">
-                The Path Forward: Reimagining Economic Policy
-              </h4>
-              <p className="text-xs font-body leading-relaxed text-muted-foreground mb-2">
-                By Editorial Board
-              </p>
-              <p className="text-xs font-body leading-relaxed">
-                Recent events demand a fundamental reassessment of our approach to fiscal policy...
-              </p>
-            </article>
-
-            <Separator className="my-6" />
-
-            <article 
-              className="mb-6 p-4 border-2 border-border min-h-[180px]"
-              onMouseEnter={(e) => {
-                const articleElement = e.currentTarget;
-                const scrollContainer = articleElement.closest('.article-container');
-                if (scrollContainer) {
-                  const containerRect = scrollContainer.getBoundingClientRect();
-                  const articleRect = articleElement.getBoundingClientRect();
-                  const scrollTop = scrollContainer.scrollTop;
-                  const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                  scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                }
-              }}
-            >
-              <Badge className="mb-2 bg-secondary text-secondary-foreground font-body uppercase text-xs">
-                Culture
-              </Badge>
-              <h4 className="font-headline font-bold text-lg leading-tight mb-2">
-                Art Gallery Reopens After Renovation
-              </h4>
-              <p className="text-xs font-body leading-relaxed text-muted-foreground mb-2">
-                By Arts Desk
-              </p>
-              <p className="text-xs font-body leading-relaxed">
-                New exhibition spaces feature contemporary works...
-              </p>
-            </article>
-
-            <Separator className="my-6" />
-
-            <article 
-              className="mb-6 p-4 border-2 border-border min-h-[350px]"
-              onMouseEnter={(e) => {
-                const articleElement = e.currentTarget;
-                const scrollContainer = articleElement.closest('.article-container');
-                if (scrollContainer) {
-                  const containerRect = scrollContainer.getBoundingClientRect();
-                  const articleRect = articleElement.getBoundingClientRect();
-                  const scrollTop = scrollContainer.scrollTop;
-                  const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                  scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                }
-              }}
-            >
-              <Badge className="mb-2 bg-secondary text-secondary-foreground font-body uppercase text-xs">
-                Sports
-              </Badge>
-              <h4 className="font-headline font-bold text-lg leading-tight mb-2">
-                Championship Game Ends in Dramatic Fashion
-              </h4>
-              <p className="text-xs font-body leading-relaxed text-muted-foreground mb-2">
-                By Sports Staff
-              </p>
-              <p className="text-xs font-body leading-relaxed mb-3">
-                Last-minute heroics seal victory in thrilling finale watched by millions...
-              </p>
-              <p className="text-xs font-body leading-relaxed">
-                The game will be remembered as one of the greatest in the sport's history.
-              </p>
-            </article>
-            </div>
-          </div>
-        </ScrollArea>
+        {/* Trending Sidebar - Fixed Section */}
+        <div className="h-full w-80 border-l border-border p-8 flex flex-col">
+          {/* Fixed Trending Section - Takes half height */}
+          <Card className="bg-muted border-2 border-border flex flex-col" style={{ height: '50vh' }}>
+            <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2 px-4 pt-4">
+              TRENDING NOW
+            </h4>
+            {/* Scrollable content inside with auto-scroll */}
+            <ScrollArea className="flex-1">
+              <div className="px-4 pb-4 auto-scroll-down">
+                <ul className="space-y-3">
+                  {[
+                    "Market Analysis: What Investors Need to Know",
+                    "Education Reform: New Proposals Emerge",
+                    "Sports: Championship Finals Preview",
+                    "Arts & Culture: Museum Exhibition Opens",
+                    "Science: Breakthrough in Medical Research",
+                    "Housing Market Shows Unexpected Growth",
+                    "International Trade Agreements Updated",
+                    "Technology: AI Advances Transform Industries",
+                    "Climate Action: New Policies Announced",
+                    "Healthcare: Breakthrough Treatment Approved"
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="font-headline font-bold text-lg mr-3 text-primary">{index + 1}.</span>
+                      <span className="text-sm font-body leading-tight">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                {/* Duplicate for seamless loop */}
+                <ul className="space-y-3 mt-6">
+                  {[
+                    "Market Analysis: What Investors Need to Know",
+                    "Education Reform: New Proposals Emerge",
+                    "Sports: Championship Finals Preview",
+                    "Arts & Culture: Museum Exhibition Opens",
+                    "Science: Breakthrough in Medical Research",
+                    "Housing Market Shows Unexpected Growth",
+                    "International Trade Agreements Updated",
+                    "Technology: AI Advances Transform Industries",
+                    "Climate Action: New Policies Announced",
+                    "Healthcare: Breakthrough Treatment Approved"
+                  ].map((item, index) => (
+                    <li key={`dup-${index}`} className="flex items-start">
+                      <span className="font-headline font-bold text-lg mr-3 text-primary">{index + 1}.</span>
+                      <span className="text-sm font-body leading-tight">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </ScrollArea>
+          </Card>
+        </div>
       </div>
     </div>
   );
