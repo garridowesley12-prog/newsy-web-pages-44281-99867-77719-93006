@@ -204,7 +204,7 @@ const Index = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedArticle, setHighlightedArticle] = useState<string | null>(null);
   const [pausedColumns, setPausedColumns] = useState<Set<number>>(new Set());
-  const [expandedArticle, setExpandedArticle] = useState<{ title: string; author: string; category: string; content: string[]; videoId?: string } | null>(null);
+  const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
   const columnsPerPage = 2;
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isWheeling = useRef(false);
@@ -460,27 +460,47 @@ const Index = () => {
                           <p className="text-sm font-body leading-relaxed text-muted-foreground mb-2">
                             By {article.author}
                           </p>
-                          <div className={`overflow-hidden ${
-                            article.minHeight === '600px' ? 'max-h-80' : 
-                            article.minHeight === '500px' ? 'max-h-64' : 
-                            article.minHeight === '450px' ? 'max-h-56' :
-                            article.minHeight === '350px' ? 'max-h-40' : 
-                            article.minHeight === '300px' ? 'max-h-32' : 'max-h-48'
-                          }`}>
-                            {article.content.map((paragraph, pIdx) => (
-                              <p key={pIdx} className={`text-sm font-body leading-relaxed ${pIdx < article.content.length - 1 ? 'mb-4' : ''}`}>
-                                {paragraph}
-                              </p>
-                            ))}
-                          </div>
-                          <button 
-                            onClick={() => setExpandedArticle(article)}
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
-                          >
-                            Continue reading →
-                          </button>
-                          {'videoId' in article && article.videoId && (
-                            <YouTubeEmbed videoId={article.videoId} />
+                          {expandedArticle === articleId ? (
+                            <>
+                              <div className="space-y-4">
+                                {article.content.map((paragraph, pIdx) => (
+                                  <p key={pIdx} className="text-sm font-body leading-relaxed">
+                                    {paragraph}
+                                  </p>
+                                ))}
+                              </div>
+                              {'videoId' in article && article.videoId && (
+                                <YouTubeEmbed videoId={article.videoId} />
+                              )}
+                              <button 
+                                onClick={() => setExpandedArticle(null)}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-4 font-body"
+                              >
+                                Show less ↑
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <div className={`overflow-hidden ${
+                                article.minHeight === '600px' ? 'max-h-80' : 
+                                article.minHeight === '500px' ? 'max-h-64' : 
+                                article.minHeight === '450px' ? 'max-h-56' :
+                                article.minHeight === '350px' ? 'max-h-40' : 
+                                article.minHeight === '300px' ? 'max-h-32' : 'max-h-48'
+                              }`}>
+                                {article.content.map((paragraph, pIdx) => (
+                                  <p key={pIdx} className={`text-sm font-body leading-relaxed ${pIdx < article.content.length - 1 ? 'mb-4' : ''}`}>
+                                    {paragraph}
+                                  </p>
+                                ))}
+                              </div>
+                              <button 
+                                onClick={() => setExpandedArticle(articleId)}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
+                              >
+                                Continue reading →
+                              </button>
+                            </>
                           )}
                         </article>
                         {idx < column.articles.length - 1 && <Separator className="my-6" />}
@@ -540,7 +560,7 @@ const Index = () => {
                             ))}
                           </div>
                           <button 
-                            onClick={() => setExpandedArticle(article)}
+                            onClick={() => setExpandedArticle(`${column.id}-${idx}`)}
                             className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
                           >
                             Continue reading →
@@ -610,41 +630,6 @@ const Index = () => {
             </ScrollArea>
           </Card>
 
-          {/* Expanded Article Section */}
-          {expandedArticle && (
-            <Card className="flex-1 overflow-hidden border-2 border-primary flex flex-col">
-              <div className="px-4 pt-4 pb-2 border-b border-border flex items-center justify-between">
-                <h4 className="font-headline font-bold text-lg">Reading</h4>
-                <button 
-                  onClick={() => setExpandedArticle(null)}
-                  className="text-muted-foreground hover:text-foreground text-xl"
-                >
-                  ×
-                </button>
-              </div>
-              <ScrollArea className="flex-1">
-                <div className="p-4">
-                  <Badge className={`mb-2 bg-${expandedArticle.category === 'Breaking' ? 'accent' : 'secondary'} text-${expandedArticle.category === 'Breaking' ? 'accent' : 'secondary'}-foreground font-body uppercase text-xs`}>
-                    {expandedArticle.category}
-                  </Badge>
-                  <h3 className="font-headline font-bold text-xl leading-tight mb-2">
-                    {expandedArticle.title}
-                  </h3>
-                  <p className="text-xs font-body text-muted-foreground mb-4">
-                    By {expandedArticle.author}
-                  </p>
-                  {expandedArticle.content.map((paragraph, pIdx) => (
-                    <p key={pIdx} className={`text-sm font-body leading-relaxed ${pIdx < expandedArticle.content.length - 1 ? 'mb-4' : ''}`}>
-                      {paragraph}
-                    </p>
-                  ))}
-                  {expandedArticle.videoId && (
-                    <YouTubeEmbed videoId={expandedArticle.videoId} />
-                  )}
-                </div>
-              </ScrollArea>
-            </Card>
-          )}
         </div>
       </div>
     </div>
