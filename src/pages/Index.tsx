@@ -205,6 +205,8 @@ const Index = () => {
   const [highlightedArticle, setHighlightedArticle] = useState<string | null>(null);
   const [pausedColumns, setPausedColumns] = useState<Set<number>>(new Set());
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [isMediaHovered, setIsMediaHovered] = useState(false);
+  const [isTrendingHovered, setIsTrendingHovered] = useState(false);
   const columnsPerPage = 2;
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isWheeling = useRef(false);
@@ -439,7 +441,8 @@ const Index = () => {
                       <div key={articleId}>
                         <article 
                           data-article-id={articleId}
-                          className={`mb-8 transition-all duration-500 ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+                          className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+                          onClick={() => setSelectedArticle(article)}
                           onMouseEnter={(e) => {
                             // Only scroll on hover if not currently highlighted from search
                             if (!isHighlighted) {
@@ -486,7 +489,8 @@ const Index = () => {
                       return (
                       <div key={`${column.id}-dup-${idx}`}>
                         <article 
-                          className={`mb-8 transition-all duration-500 ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+                          className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+                          onClick={() => setSelectedArticle(article)}
                           onMouseEnter={(e) => {
                             // Only scroll on hover if not currently highlighted from search
                             if (!isHighlighted) {
@@ -535,8 +539,17 @@ const Index = () => {
         {/* Sidebar - Media and Trending */}
         <div className="h-full w-[45vw] border-l border-border p-8 flex flex-col gap-6 overflow-hidden">
           {/* Media Section */}
-          <Card className="bg-muted border-2 border-border flex flex-col overflow-hidden" style={{ height: selectedArticle ? '65vh' : '0', transition: 'height 0.3s ease' }}>
-            {selectedArticle && (
+          <Card 
+            className="bg-muted border-2 border-border flex flex-col overflow-hidden transition-all duration-500" 
+            style={{ 
+              height: selectedArticle 
+                ? (isTrendingHovered && !isMediaHovered ? '20vh' : '65vh')
+                : '0'
+            }}
+            onMouseEnter={() => setIsMediaHovered(true)}
+            onMouseLeave={() => setIsMediaHovered(false)}
+          >
+            {selectedArticle ? (
               <>
                 <div className="flex items-center justify-between border-b-2 border-foreground pb-2 px-4 pt-4">
                   <h4 className="font-headline font-bold text-xl">
@@ -571,26 +584,45 @@ const Index = () => {
                   )}
                 </ScrollArea>
               </>
+            ) : (
+              <div className="flex items-center justify-center h-full p-8">
+                <p className="text-muted-foreground font-body text-center">
+                  Click an article to display it here
+                </p>
+              </div>
             )}
           </Card>
 
           {/* Trending Section */}
-          <Card className="bg-muted border-2 border-border flex flex-col flex-1 overflow-hidden">
+          <Card 
+            className="bg-muted border-2 border-border flex flex-col overflow-hidden transition-all duration-500" 
+            style={{ 
+              height: selectedArticle 
+                ? (isTrendingHovered && !isMediaHovered ? '65vh' : 'calc(35vh - 1.5rem)')
+                : '100%'
+            }}
+            onMouseEnter={() => setIsTrendingHovered(true)}
+            onMouseLeave={() => setIsTrendingHovered(false)}
+          >
             <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2 px-4 pt-4">
               TRENDING NOW
             </h4>
             <div className="px-4 pb-4 overflow-auto">
               <ul className="space-y-3">
                 {[
-                  "Market Analysis: What Investors Need to Know",
-                  "Education Reform: New Proposals Emerge",
-                  "Sports: Championship Finals Preview",
-                  "Arts & Culture: Museum Exhibition Opens",
-                  "Science: Breakthrough in Medical Research"
+                  { title: "Market Analysis: What Investors Need to Know", category: "Business", categoryColor: "secondary" as const, author: "Robert Kim", content: ["Venture capital continues flowing to promising tech ventures as investors bet on post-pandemic innovation boom and transformative technologies.", "Industry analysts point to artificial intelligence, biotechnology, and sustainable energy sectors as driving forces behind unprecedented investment activity."] },
+                  { title: "Education Reform: New Proposals Emerge", category: "Education", categoryColor: "secondary" as const, author: "Amanda Foster", content: ["Educational institutions worldwide adapt to changing student needs by combining traditional classroom instruction with innovative digital platforms.", "Early results suggest improved student engagement and learning outcomes across multiple disciplines."] },
+                  { title: "Championship Finals Preview", category: "Sports", categoryColor: "secondary" as const, author: "Marcus Thompson", content: ["In a stunning upset, the season's lowest-ranked team defeats defending champions in dramatic finale that will be remembered for generations.", "The victory came down to the final seconds, with spectacular plays from previously unknown athletes who rose to the occasion when it mattered most."] },
+                  { title: "Museum Exhibition Opens", category: "Culture", categoryColor: "secondary" as const, author: "Thomas Anderson", content: ["Previously unseen artifacts from ancient civilization go on public display, offering new insights into historical mysteries that have puzzled scholars for centuries.", "The exhibition features interactive elements that bring history to life for visitors of all ages."] },
+                  { title: "Breakthrough in Medical Research", category: "Health", categoryColor: "secondary" as const, author: "Dr. James Mitchell", content: ["Clinical trials show remarkable results for novel therapy targeting previously untreatable conditions, offering hope to millions of patients worldwide.", "The treatment has shown minimal side effects while demonstrating significant efficacy across diverse patient populations."] }
                 ].map((item, index) => (
-                  <li key={index} className="flex items-start">
+                  <li 
+                    key={index} 
+                    className="flex items-start cursor-pointer hover:bg-background/50 p-2 rounded transition-colors"
+                    onClick={() => setSelectedArticle(item)}
+                  >
                     <span className="font-headline font-bold text-lg mr-3 text-primary">{index + 1}.</span>
-                    <span className="text-sm font-body leading-tight">{item}</span>
+                    <span className="text-sm font-body leading-tight">{item.title}</span>
                   </li>
                 ))}
               </ul>
