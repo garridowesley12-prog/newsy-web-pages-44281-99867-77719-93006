@@ -204,7 +204,7 @@ const Index = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedArticle, setHighlightedArticle] = useState<string | null>(null);
   const [pausedColumns, setPausedColumns] = useState<Set<number>>(new Set());
-  const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const columnsPerPage = 2;
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isWheeling = useRef(false);
@@ -440,7 +440,6 @@ const Index = () => {
                         <article 
                           data-article-id={articleId}
                           className={`mb-8 transition-all duration-500 ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
-                          style={{ minHeight: article.minHeight }}
                           onMouseEnter={(e) => {
                             // Only scroll on hover if not currently highlighted from search
                             if (!isHighlighted) {
@@ -459,49 +458,21 @@ const Index = () => {
                           <Badge className={`mb-2 bg-${article.categoryColor} text-${article.categoryColor}-foreground font-body uppercase text-xs`}>
                             {article.category}
                           </Badge>
-                          <h3 className={`font-headline font-bold leading-tight mb-3 ${
-                            article.minHeight === '600px' ? 'text-3xl' : 
-                            article.minHeight === '500px' ? 'text-2xl' : 
-                            article.minHeight === '400px' ? 'text-2xl' :
-                            article.minHeight === '300px' ? 'text-2xl' : 'text-xl'
-                          }`}>
+                          <h3 className={`font-headline font-bold leading-tight mb-3 text-2xl`}>
                             {article.title}
                           </h3>
                           <p className="text-sm font-body leading-relaxed text-muted-foreground mb-2">
                             By {article.author}
                           </p>
-                          {expandedArticle === articleId ? (
-                            <>
-                              <div className="space-y-4">
-                                {article.content.map((paragraph, pIdx) => (
-                                  <p key={pIdx} className="text-sm font-body leading-relaxed">
-                                    {paragraph}
-                                  </p>
-                                ))}
-                              </div>
-                              {'videoId' in article && article.videoId && (
-                                <YouTubeEmbed videoId={article.videoId} />
-                              )}
-                              <button 
-                                onClick={() => setExpandedArticle(null)}
-                                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-4 font-body"
-                              >
-                                Show less ↑
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <p className="text-sm font-body leading-relaxed">
-                                {article.content[0].split(' ').slice(0, 17).join(' ')}...
-                              </p>
-                              <button 
-                                onClick={() => setExpandedArticle(articleId)}
-                                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
-                              >
-                                Continue reading →
-                              </button>
-                            </>
-                          )}
+                          <p className="text-sm font-body leading-relaxed">
+                            {article.content[0].split(' ').slice(0, 17).join(' ')}...
+                          </p>
+                          <button 
+                            onClick={() => setSelectedArticle(article)}
+                            className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
+                          >
+                            Continue reading →
+                          </button>
                         </article>
                         {idx < column.articles.length - 1 && <Separator className="my-6" />}
                       </div>
@@ -516,7 +487,6 @@ const Index = () => {
                       <div key={`${column.id}-dup-${idx}`}>
                         <article 
                           className={`mb-8 transition-all duration-500 ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
-                          style={{ minHeight: article.minHeight }}
                           onMouseEnter={(e) => {
                             // Only scroll on hover if not currently highlighted from search
                             if (!isHighlighted) {
@@ -535,12 +505,7 @@ const Index = () => {
                           <Badge className={`mb-2 bg-${article.categoryColor} text-${article.categoryColor}-foreground font-body uppercase text-xs`}>
                             {article.category}
                           </Badge>
-                          <h3 className={`font-headline font-bold leading-tight mb-3 ${
-                            article.minHeight === '600px' ? 'text-3xl' : 
-                            article.minHeight === '500px' ? 'text-2xl' : 
-                            article.minHeight === '400px' ? 'text-2xl' :
-                            article.minHeight === '300px' ? 'text-2xl' : 'text-xl'
-                          }`}>
+                          <h3 className={`font-headline font-bold leading-tight mb-3 text-2xl`}>
                             {article.title}
                           </h3>
                           <p className="text-sm font-body leading-relaxed text-muted-foreground mb-2">
@@ -550,7 +515,7 @@ const Index = () => {
                             {article.content[0].split(' ').slice(0, 17).join(' ')}...
                           </p>
                           <button 
-                            onClick={() => setExpandedArticle(`${column.id}-${idx}`)}
+                            onClick={() => setSelectedArticle(article)}
                             className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
                           >
                             Continue reading →
@@ -567,14 +532,54 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Trending Sidebar - Fixed Section */}
-        <div className="h-full w-[45vw] border-l border-border p-8 flex flex-col gap-6">
-          {/* Fixed Trending Section - Takes half height */}
-          <Card className="bg-muted border-2 border-border flex flex-col" style={{ height: '50vh' }}>
+        {/* Sidebar - Media and Trending */}
+        <div className="h-full w-[45vw] border-l border-border p-8 flex flex-col gap-6 overflow-hidden">
+          {/* Media Section */}
+          <Card className="bg-muted border-2 border-border flex flex-col overflow-hidden" style={{ height: selectedArticle ? '65vh' : '0', transition: 'height 0.3s ease' }}>
+            {selectedArticle && (
+              <>
+                <div className="flex items-center justify-between border-b-2 border-foreground pb-2 px-4 pt-4">
+                  <h4 className="font-headline font-bold text-xl">
+                    MEDIA
+                  </h4>
+                  <button 
+                    onClick={() => setSelectedArticle(null)}
+                    className="text-2xl hover:text-primary transition-colors"
+                  >
+                    ×
+                  </button>
+                </div>
+                <ScrollArea className="flex-1 px-4 pb-4 pt-4">
+                  <Badge className={`mb-2 bg-${selectedArticle.categoryColor} text-${selectedArticle.categoryColor}-foreground font-body uppercase text-xs`}>
+                    {selectedArticle.category}
+                  </Badge>
+                  <h3 className="font-headline font-bold text-3xl leading-tight mb-3">
+                    {selectedArticle.title}
+                  </h3>
+                  <p className="text-sm font-body leading-relaxed text-muted-foreground mb-4">
+                    By {selectedArticle.author}
+                  </p>
+                  <div className="space-y-4">
+                    {selectedArticle.content.map((paragraph: string, pIdx: number) => (
+                      <p key={pIdx} className="text-sm font-body leading-relaxed">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                  {'videoId' in selectedArticle && selectedArticle.videoId && (
+                    <YouTubeEmbed videoId={selectedArticle.videoId} />
+                  )}
+                </ScrollArea>
+              </>
+            )}
+          </Card>
+
+          {/* Trending Section */}
+          <Card className="bg-muted border-2 border-border flex flex-col flex-1 overflow-hidden">
             <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2 px-4 pt-4">
               TRENDING NOW
             </h4>
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-4 overflow-auto">
               <ul className="space-y-3">
                 {[
                   "Market Analysis: What Investors Need to Know",
@@ -591,7 +596,6 @@ const Index = () => {
               </ul>
             </div>
           </Card>
-
         </div>
       </div>
     </div>
