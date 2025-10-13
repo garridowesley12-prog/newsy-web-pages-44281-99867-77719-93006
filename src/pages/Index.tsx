@@ -208,6 +208,8 @@ const Index = () => {
   const columnsPerPage = 2;
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isWheeling = useRef(false);
+  const dotNavRef = useRef<HTMLDivElement | null>(null);
+  const isDotNavHovered = useRef(false);
   
   // Generate search suggestions based on query
   const searchSuggestions = useMemo(() => {
@@ -240,9 +242,12 @@ const Index = () => {
     (currentPage + 1) * columnsPerPage
   );
 
-  // Handle wheel scroll navigation
+  // Handle wheel scroll navigation - only when hovering dot navigation
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      // Only trigger if hovering over dot navigation
+      if (!isDotNavHovered.current) return;
+      
       // Prevent multiple rapid scrolls
       if (isWheeling.current) return;
       
@@ -397,14 +402,19 @@ const Index = () => {
         {/* Article Columns Section */}
         <div className="flex flex-col flex-1 border-r border-border">
           {/* Dot Navigation for Article Columns */}
-          <div className="flex justify-center items-center gap-3 py-4 border-b border-border">
+          <div 
+            ref={dotNavRef}
+            onMouseEnter={() => isDotNavHovered.current = true}
+            onMouseLeave={() => isDotNavHovered.current = false}
+            className="flex justify-center items-center gap-3 py-4 border-b border-border"
+          >
             {Array.from({ length: totalPages }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentPage(index)}
                 className={`w-3 h-3 rounded-full transition-all ${
                   currentPage === index 
-                    ? 'bg-primary scale-125' 
+                    ? 'bg-primary scale-125'
                     : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                 }`}
                 aria-label={`Go to page ${index + 1}`}
@@ -481,19 +491,9 @@ const Index = () => {
                             </>
                           ) : (
                             <>
-                              <div className={`overflow-hidden ${
-                                article.minHeight === '600px' ? 'max-h-80' : 
-                                article.minHeight === '500px' ? 'max-h-64' : 
-                                article.minHeight === '450px' ? 'max-h-56' :
-                                article.minHeight === '350px' ? 'max-h-40' : 
-                                article.minHeight === '300px' ? 'max-h-32' : 'max-h-48'
-                              }`}>
-                                {article.content.map((paragraph, pIdx) => (
-                                  <p key={pIdx} className={`text-sm font-body leading-relaxed ${pIdx < article.content.length - 1 ? 'mb-4' : ''}`}>
-                                    {paragraph}
-                                  </p>
-                                ))}
-                              </div>
+                              <p className="text-sm font-body leading-relaxed">
+                                {article.content[0].split(' ').slice(0, 17).join(' ')}...
+                              </p>
                               <button 
                                 onClick={() => setExpandedArticle(articleId)}
                                 className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
@@ -546,19 +546,9 @@ const Index = () => {
                           <p className="text-sm font-body leading-relaxed text-muted-foreground mb-2">
                             By {article.author}
                           </p>
-                          <div className={`overflow-hidden ${
-                            article.minHeight === '600px' ? 'max-h-80' : 
-                            article.minHeight === '500px' ? 'max-h-64' : 
-                            article.minHeight === '450px' ? 'max-h-56' :
-                            article.minHeight === '350px' ? 'max-h-40' : 
-                            article.minHeight === '300px' ? 'max-h-32' : 'max-h-48'
-                          }`}>
-                            {article.content.map((paragraph, pIdx) => (
-                              <p key={pIdx} className={`text-sm font-body leading-relaxed ${pIdx < article.content.length - 1 ? 'mb-4' : ''}`}>
-                                {paragraph}
-                              </p>
-                            ))}
-                          </div>
+                          <p className="text-sm font-body leading-relaxed">
+                            {article.content[0].split(' ').slice(0, 17).join(' ')}...
+                          </p>
                           <button 
                             onClick={() => setExpandedArticle(`${column.id}-${idx}`)}
                             className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
@@ -578,56 +568,28 @@ const Index = () => {
         </div>
 
         {/* Trending Sidebar - Fixed Section */}
-        <div className="h-full w-80 border-l border-border p-8 flex flex-col gap-6">
+        <div className="h-full w-[45vw] border-l border-border p-8 flex flex-col gap-6">
           {/* Fixed Trending Section - Takes half height */}
           <Card className="bg-muted border-2 border-border flex flex-col" style={{ height: '50vh' }}>
             <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2 px-4 pt-4">
               TRENDING NOW
             </h4>
-            {/* Scrollable content inside with auto-scroll */}
-            <ScrollArea className="flex-1">
-              <div className="px-4 pb-4 auto-scroll-down">
-                <ul className="space-y-3">
-                  {[
-                    "Market Analysis: What Investors Need to Know",
-                    "Education Reform: New Proposals Emerge",
-                    "Sports: Championship Finals Preview",
-                    "Arts & Culture: Museum Exhibition Opens",
-                    "Science: Breakthrough in Medical Research",
-                    "Housing Market Shows Unexpected Growth",
-                    "International Trade Agreements Updated",
-                    "Technology: AI Advances Transform Industries",
-                    "Climate Action: New Policies Announced",
-                    "Healthcare: Breakthrough Treatment Approved"
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="font-headline font-bold text-lg mr-3 text-primary">{index + 1}.</span>
-                      <span className="text-sm font-body leading-tight">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                {/* Duplicate for seamless loop */}
-                <ul className="space-y-3 mt-6">
-                  {[
-                    "Market Analysis: What Investors Need to Know",
-                    "Education Reform: New Proposals Emerge",
-                    "Sports: Championship Finals Preview",
-                    "Arts & Culture: Museum Exhibition Opens",
-                    "Science: Breakthrough in Medical Research",
-                    "Housing Market Shows Unexpected Growth",
-                    "International Trade Agreements Updated",
-                    "Technology: AI Advances Transform Industries",
-                    "Climate Action: New Policies Announced",
-                    "Healthcare: Breakthrough Treatment Approved"
-                  ].map((item, index) => (
-                    <li key={`dup-${index}`} className="flex items-start">
-                      <span className="font-headline font-bold text-lg mr-3 text-primary">{index + 1}.</span>
-                      <span className="text-sm font-body leading-tight">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </ScrollArea>
+            <div className="px-4 pb-4">
+              <ul className="space-y-3">
+                {[
+                  "Market Analysis: What Investors Need to Know",
+                  "Education Reform: New Proposals Emerge",
+                  "Sports: Championship Finals Preview",
+                  "Arts & Culture: Museum Exhibition Opens",
+                  "Science: Breakthrough in Medical Research"
+                ].map((item, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="font-headline font-bold text-lg mr-3 text-primary">{index + 1}.</span>
+                    <span className="text-sm font-body leading-tight">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Card>
 
         </div>
