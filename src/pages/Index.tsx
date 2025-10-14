@@ -204,7 +204,8 @@ const Index = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedArticle, setHighlightedArticle] = useState<string | null>(null);
   const [pausedColumns, setPausedColumns] = useState<Set<number>>(new Set());
-  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
+  const [mediaArticle, setMediaArticle] = useState<any>(null);
   const [isMediaHovered, setIsMediaHovered] = useState(false);
   const [isTrendingHovered, setIsTrendingHovered] = useState(false);
   const columnsPerPage = 2;
@@ -434,27 +435,51 @@ const Index = () => {
                 >
                   <div className="pb-8">
                     {/* Render articles */}
-                    {column.articles.map((article, idx) => {
+                     {column.articles.map((article, idx) => {
                       const articleId = `${column.id}-${idx}`;
                       const isHighlighted = highlightedArticle === articleId;
+                      const isExpanded = expandedArticle === articleId;
+                      const hasOtherExpanded = expandedArticle && expandedArticle !== articleId;
+                      
                       return (
                       <div key={articleId}>
                         <article 
                           data-article-id={articleId}
-                          className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
-                          onClick={() => setSelectedArticle(article)}
+                          className={`mb-8 transition-all duration-500 ${!hasOtherExpanded ? 'cursor-pointer' : 'cursor-default opacity-50'} ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+                          onClick={(e) => {
+                            if (hasOtherExpanded) return;
+                            
+                            // Pause column animation
+                            setPausedColumns(new Set([column.id]));
+                            
+                            // Set expanded article and media
+                            setExpandedArticle(articleId);
+                            if ('videoId' in article && article.videoId) {
+                              setMediaArticle(article);
+                            }
+                            
+                            // Scroll to show full article from top
+                            const articleElement = e.currentTarget;
+                            const scrollViewport = articleElement.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
+                            if (scrollViewport) {
+                              const viewportRect = scrollViewport.getBoundingClientRect();
+                              const articleRect = articleElement.getBoundingClientRect();
+                              const currentScrollTop = scrollViewport.scrollTop;
+                              const targetScroll = currentScrollTop + (articleRect.top - viewportRect.top) - 20;
+                              scrollViewport.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+                            }
+                          }}
                           onMouseEnter={(e) => {
-                            // Only scroll on hover if not currently highlighted from search
-                            if (!isHighlighted) {
-                              const articleElement = e.currentTarget;
-                              const scrollContainer = articleElement.closest('.article-container');
-                              if (scrollContainer) {
-                                const containerRect = scrollContainer.getBoundingClientRect();
-                                const articleRect = articleElement.getBoundingClientRect();
-                                const scrollTop = scrollContainer.scrollTop;
-                                const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                                scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                              }
+                            if (hasOtherExpanded || isHighlighted) return;
+                            
+                            const articleElement = e.currentTarget;
+                            const scrollContainer = articleElement.closest('.article-container');
+                            if (scrollContainer) {
+                              const containerRect = scrollContainer.getBoundingClientRect();
+                              const articleRect = articleElement.getBoundingClientRect();
+                              const scrollTop = scrollContainer.scrollTop;
+                              const targetScroll = scrollTop + articleRect.top - containerRect.top;
+                              scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
                             }
                           }}
                         >
@@ -467,15 +492,47 @@ const Index = () => {
                           <p className="text-sm font-body leading-relaxed text-muted-foreground mb-2">
                             By {article.author}
                           </p>
-                          <p className="text-sm font-body leading-relaxed">
-                            {article.content[0].split(' ').slice(0, 17).join(' ')}...
-                          </p>
-                          <button 
-                            onClick={() => setSelectedArticle(article)}
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
-                          >
-                            Continue reading →
-                          </button>
+                          
+                          {isExpanded ? (
+                            <div className="space-y-4">
+                              {article.content.map((paragraph: string, pIdx: number) => (
+                                <p key={pIdx} className="text-sm font-body leading-relaxed">
+                                  {paragraph}
+                                </p>
+                              ))}
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-sm font-body leading-relaxed">
+                                {article.content[0].split(' ').slice(0, 17).join(' ')}...
+                              </p>
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (hasOtherExpanded) return;
+                                  
+                                  setPausedColumns(new Set([column.id]));
+                                  setExpandedArticle(articleId);
+                                  if ('videoId' in article && article.videoId) {
+                                    setMediaArticle(article);
+                                  }
+                                  
+                                  const articleElement = e.currentTarget.closest('article');
+                                  const scrollViewport = articleElement?.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
+                                  if (scrollViewport && articleElement) {
+                                    const viewportRect = scrollViewport.getBoundingClientRect();
+                                    const articleRect = articleElement.getBoundingClientRect();
+                                    const currentScrollTop = scrollViewport.scrollTop;
+                                    const targetScroll = currentScrollTop + (articleRect.top - viewportRect.top) - 20;
+                                    scrollViewport.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+                                  }
+                                }}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
+                              >
+                                Continue reading →
+                              </button>
+                            </>
+                          )}
                         </article>
                         {idx < column.articles.length - 1 && <Separator className="my-6" />}
                       </div>
@@ -486,23 +543,43 @@ const Index = () => {
                     {column.articles.map((article, idx) => {
                       const articleId = `${column.id}-${idx}`;
                       const isHighlighted = highlightedArticle === articleId;
+                      const isExpanded = expandedArticle === articleId;
+                      const hasOtherExpanded = expandedArticle && expandedArticle !== articleId;
+                      
                       return (
                       <div key={`${column.id}-dup-${idx}`}>
                         <article 
-                          className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
-                          onClick={() => setSelectedArticle(article)}
+                          className={`mb-8 transition-all duration-500 ${!hasOtherExpanded ? 'cursor-pointer' : 'cursor-default opacity-50'} ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+                          onClick={(e) => {
+                            if (hasOtherExpanded) return;
+                            
+                            setPausedColumns(new Set([column.id]));
+                            setExpandedArticle(articleId);
+                            if ('videoId' in article && article.videoId) {
+                              setMediaArticle(article);
+                            }
+                            
+                            const articleElement = e.currentTarget;
+                            const scrollViewport = articleElement.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
+                            if (scrollViewport) {
+                              const viewportRect = scrollViewport.getBoundingClientRect();
+                              const articleRect = articleElement.getBoundingClientRect();
+                              const currentScrollTop = scrollViewport.scrollTop;
+                              const targetScroll = currentScrollTop + (articleRect.top - viewportRect.top) - 20;
+                              scrollViewport.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+                            }
+                          }}
                           onMouseEnter={(e) => {
-                            // Only scroll on hover if not currently highlighted from search
-                            if (!isHighlighted) {
-                              const articleElement = e.currentTarget;
-                              const scrollContainer = articleElement.closest('.article-container');
-                              if (scrollContainer) {
-                                const containerRect = scrollContainer.getBoundingClientRect();
-                                const articleRect = articleElement.getBoundingClientRect();
-                                const scrollTop = scrollContainer.scrollTop;
-                                const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                                scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                              }
+                            if (hasOtherExpanded || isHighlighted) return;
+                            
+                            const articleElement = e.currentTarget;
+                            const scrollContainer = articleElement.closest('.article-container');
+                            if (scrollContainer) {
+                              const containerRect = scrollContainer.getBoundingClientRect();
+                              const articleRect = articleElement.getBoundingClientRect();
+                              const scrollTop = scrollContainer.scrollTop;
+                              const targetScroll = scrollTop + articleRect.top - containerRect.top;
+                              scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
                             }
                           }}
                         >
@@ -515,15 +592,47 @@ const Index = () => {
                           <p className="text-sm font-body leading-relaxed text-muted-foreground mb-2">
                             By {article.author}
                           </p>
-                          <p className="text-sm font-body leading-relaxed">
-                            {article.content[0].split(' ').slice(0, 17).join(' ')}...
-                          </p>
-                          <button 
-                            onClick={() => setSelectedArticle(article)}
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
-                          >
-                            Continue reading →
-                          </button>
+                          
+                          {isExpanded ? (
+                            <div className="space-y-4">
+                              {article.content.map((paragraph: string, pIdx: number) => (
+                                <p key={pIdx} className="text-sm font-body leading-relaxed">
+                                  {paragraph}
+                                </p>
+                              ))}
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-sm font-body leading-relaxed">
+                                {article.content[0].split(' ').slice(0, 17).join(' ')}...
+                              </p>
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (hasOtherExpanded) return;
+                                  
+                                  setPausedColumns(new Set([column.id]));
+                                  setExpandedArticle(articleId);
+                                  if ('videoId' in article && article.videoId) {
+                                    setMediaArticle(article);
+                                  }
+                                  
+                                  const articleElement = e.currentTarget.closest('article');
+                                  const scrollViewport = articleElement?.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
+                                  if (scrollViewport && articleElement) {
+                                    const viewportRect = scrollViewport.getBoundingClientRect();
+                                    const articleRect = articleElement.getBoundingClientRect();
+                                    const currentScrollTop = scrollViewport.scrollTop;
+                                    const targetScroll = currentScrollTop + (articleRect.top - viewportRect.top) - 20;
+                                    scrollViewport.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+                                  }
+                                }}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
+                              >
+                                Continue reading →
+                              </button>
+                            </>
+                          )}
                         </article>
                         {idx < column.articles.length - 1 && <Separator className="my-6" />}
                       </div>
@@ -542,52 +651,40 @@ const Index = () => {
           <Card 
             className="bg-muted border-2 border-border flex flex-col overflow-hidden transition-all duration-500" 
             style={{ 
-              height: selectedArticle 
-                ? (isTrendingHovered && !isMediaHovered ? '20vh' : '65vh')
-                : '0'
+              height: mediaArticle 
+                ? (isTrendingHovered && !isMediaHovered ? '15%' : '80%')
+                : '20%'
             }}
             onMouseEnter={() => setIsMediaHovered(true)}
             onMouseLeave={() => setIsMediaHovered(false)}
           >
-            {selectedArticle ? (
-              <>
-                <div className="flex items-center justify-between border-b-2 border-foreground pb-2 px-4 pt-4">
-                  <h4 className="font-headline font-bold text-xl">
-                    MEDIA
-                  </h4>
-                  <button 
-                    onClick={() => setSelectedArticle(null)}
-                    className="text-2xl hover:text-primary transition-colors"
-                  >
-                    ×
-                  </button>
-                </div>
-                <ScrollArea className="flex-1 px-4 pb-4 pt-4">
-                  <Badge className={`mb-2 bg-${selectedArticle.categoryColor} text-${selectedArticle.categoryColor}-foreground font-body uppercase text-xs`}>
-                    {selectedArticle.category}
-                  </Badge>
-                  <h3 className="font-headline font-bold text-3xl leading-tight mb-3">
-                    {selectedArticle.title}
-                  </h3>
-                  <p className="text-sm font-body leading-relaxed text-muted-foreground mb-4">
-                    By {selectedArticle.author}
-                  </p>
-                  <div className="space-y-4">
-                    {selectedArticle.content.map((paragraph: string, pIdx: number) => (
-                      <p key={pIdx} className="text-sm font-body leading-relaxed">
-                        {paragraph}
-                      </p>
-                    ))}
-                  </div>
-                  {'videoId' in selectedArticle && selectedArticle.videoId && (
-                    <YouTubeEmbed videoId={selectedArticle.videoId} />
-                  )}
-                </ScrollArea>
-              </>
+            <div className="flex items-center justify-between border-b-2 border-foreground pb-2 px-4 pt-4">
+              <h4 className="font-headline font-bold text-xl">
+                MEDIA
+              </h4>
+              {mediaArticle && (
+                <button 
+                  onClick={() => {
+                    setMediaArticle(null);
+                    setExpandedArticle(null);
+                    setPausedColumns(new Set());
+                  }}
+                  className="text-2xl hover:text-primary transition-colors"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            {mediaArticle ? (
+              <ScrollArea className="flex-1 px-4 pb-4 pt-4">
+                {'videoId' in mediaArticle && mediaArticle.videoId && (
+                  <YouTubeEmbed videoId={mediaArticle.videoId} />
+                )}
+              </ScrollArea>
             ) : (
-              <div className="flex items-center justify-center h-full p-8">
+              <div className="flex items-center justify-center flex-1 p-8">
                 <p className="text-muted-foreground font-body text-center">
-                  Click an article to display it here
+                  Click an article to display media here
                 </p>
               </div>
             )}
@@ -597,9 +694,9 @@ const Index = () => {
           <Card 
             className="bg-muted border-2 border-border flex flex-col overflow-hidden transition-all duration-500" 
             style={{ 
-              height: selectedArticle 
-                ? (isTrendingHovered && !isMediaHovered ? '65vh' : 'calc(35vh - 1.5rem)')
-                : '100%'
+              height: mediaArticle 
+                ? (isTrendingHovered && !isMediaHovered ? '80%' : '15%')
+                : '75%'
             }}
             onMouseEnter={() => setIsTrendingHovered(true)}
             onMouseLeave={() => setIsTrendingHovered(false)}
@@ -610,16 +707,20 @@ const Index = () => {
             <div className="px-4 pb-4 overflow-auto">
               <ul className="space-y-3">
                 {[
-                  { title: "Market Analysis: What Investors Need to Know", category: "Business", categoryColor: "secondary" as const, author: "Robert Kim", content: ["Venture capital continues flowing to promising tech ventures as investors bet on post-pandemic innovation boom and transformative technologies.", "Industry analysts point to artificial intelligence, biotechnology, and sustainable energy sectors as driving forces behind unprecedented investment activity."] },
+                  { title: "Market Analysis: What Investors Need to Know", category: "Business", categoryColor: "secondary" as const, author: "Robert Kim", content: ["Venture capital continues flowing to promising tech ventures as investors bet on post-pandemic innovation boom and transformative technologies.", "Industry analysts point to artificial intelligence, biotechnology, and sustainable energy sectors as driving forces behind unprecedented investment activity."], videoId: "dQw4w9WgXcQ" },
                   { title: "Education Reform: New Proposals Emerge", category: "Education", categoryColor: "secondary" as const, author: "Amanda Foster", content: ["Educational institutions worldwide adapt to changing student needs by combining traditional classroom instruction with innovative digital platforms.", "Early results suggest improved student engagement and learning outcomes across multiple disciplines."] },
-                  { title: "Championship Finals Preview", category: "Sports", categoryColor: "secondary" as const, author: "Marcus Thompson", content: ["In a stunning upset, the season's lowest-ranked team defeats defending champions in dramatic finale that will be remembered for generations.", "The victory came down to the final seconds, with spectacular plays from previously unknown athletes who rose to the occasion when it mattered most."] },
+                  { title: "Championship Finals Preview", category: "Sports", categoryColor: "secondary" as const, author: "Marcus Thompson", content: ["In a stunning upset, the season's lowest-ranked team defeats defending champions in dramatic finale that will be remembered for generations.", "The victory came down to the final seconds, with spectacular plays from previously unknown athletes who rose to the occasion when it mattered most."], videoId: "dQw4w9WgXcQ" },
                   { title: "Museum Exhibition Opens", category: "Culture", categoryColor: "secondary" as const, author: "Thomas Anderson", content: ["Previously unseen artifacts from ancient civilization go on public display, offering new insights into historical mysteries that have puzzled scholars for centuries.", "The exhibition features interactive elements that bring history to life for visitors of all ages."] },
-                  { title: "Breakthrough in Medical Research", category: "Health", categoryColor: "secondary" as const, author: "Dr. James Mitchell", content: ["Clinical trials show remarkable results for novel therapy targeting previously untreatable conditions, offering hope to millions of patients worldwide.", "The treatment has shown minimal side effects while demonstrating significant efficacy across diverse patient populations."] }
+                  { title: "Breakthrough in Medical Research", category: "Health", categoryColor: "secondary" as const, author: "Dr. James Mitchell", content: ["Clinical trials show remarkable results for novel therapy targeting previously untreatable conditions, offering hope to millions of patients worldwide.", "The treatment has shown minimal side effects while demonstrating significant efficacy across diverse patient populations."], videoId: "dQw4w9WgXcQ" }
                 ].map((item, index) => (
                   <li 
                     key={index} 
                     className="flex items-start cursor-pointer hover:bg-background/50 p-2 rounded transition-colors"
-                    onClick={() => setSelectedArticle(item)}
+                    onClick={() => {
+                      if ('videoId' in item && item.videoId) {
+                        setMediaArticle(item);
+                      }
+                    }}
                   >
                     <span className="font-headline font-bold text-lg mr-3 text-primary">{index + 1}.</span>
                     <span className="text-sm font-body leading-tight">{item.title}</span>
