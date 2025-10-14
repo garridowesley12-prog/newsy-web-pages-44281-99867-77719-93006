@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import articlesData from "@/data/articles.json";
 
 // YouTube embed component for articles
 const YouTubeEmbed = ({ videoId }: { videoId: string }) => (
@@ -20,183 +21,8 @@ const YouTubeEmbed = ({ videoId }: { videoId: string }) => (
   </div>
 );
 
-// Article column data - unique articles for each column
-const articleColumns = [
-  {
-    id: 1,
-    direction: "down" as const,
-    articles: [
-      {
-        category: "Politics",
-        categoryColor: "secondary" as const,
-        title: "Senate Committee Advances Landmark Infrastructure Bill",
-        author: "Margaret Chen",
-        content: [
-          "After months of negotiations, bipartisan support emerges for comprehensive infrastructure package aimed at modernizing transportation networks and creating thousands of new jobs across the country.",
-          "The legislation, which has been years in the making, represents one of the most significant investments in America's infrastructure since the Interstate Highway System.",
-          "Key provisions include funding for roads, bridges, broadband expansion, and climate resilience initiatives. Economists predict substantial long-term economic benefits from the modernization efforts."
-        ],
-        minHeight: "500px"
-      },
-      {
-        category: "Technology",
-        categoryColor: "secondary" as const,
-        title: "Tech Giants Face New Regulatory Scrutiny",
-        author: "David Park",
-        content: [
-          "Lawmakers propose sweeping changes to digital privacy laws as concerns mount over data collection practices and market dominance of major technology companies.",
-          "The proposed regulations would fundamentally reshape how tech companies operate, introducing strict requirements for data transparency and user consent."
-        ],
-        minHeight: "350px"
-      },
-      {
-        category: "Technology",
-        categoryColor: "accent" as const,
-        title: "Revolutionary AI Model Transforms Creative Industries",
-        author: "Alex Thompson",
-        content: [
-          "A groundbreaking artificial intelligence system is reshaping how creative professionals work, offering unprecedented capabilities in content generation and design assistance.",
-          "Industry experts demonstrate the technology's potential in this exclusive presentation, showcasing real-world applications across multiple creative fields."
-        ],
-        videoId: "dQw4w9WgXcQ",
-        minHeight: "550px"
-      },
-      {
-        category: "Local",
-        categoryColor: "secondary" as const,
-        title: "City Council Approves New Park Development",
-        author: "Local Desk",
-        content: [
-          "Downtown expansion includes green spaces and community centers in ambitious urban renewal project that aims to bring nature back to the city's core.",
-          "The development will feature walking trails, playgrounds, and public art installations designed by local artists."
-        ],
-        minHeight: "300px"
-      }
-    ]
-  },
-  {
-    id: 2,
-    direction: "up" as const,
-    articles: [
-      {
-        category: "Breaking",
-        categoryColor: "accent" as const,
-        title: "Historic Climate Accord Signed by 150 Nations",
-        author: "Elena Rodriguez",
-        content: [
-          "World leaders convene to commit to ambitious emissions targets in effort to combat accelerating environmental changes. The landmark agreement represents a pivotal moment in international cooperation.",
-          "Scientists and environmental advocates have praised the comprehensive nature of the accord, which includes binding commitments for carbon reduction, renewable energy adoption, and financial support for developing nations.",
-          "The agreement comes after intensive negotiations spanning multiple continents and represents a unified global response to the climate crisis that has been decades in the making.",
-          "Implementation begins next quarter with initial reporting requirements and verification mechanisms to ensure compliance across all participating nations."
-        ],
-        minHeight: "600px"
-      },
-      {
-        category: "Business",
-        categoryColor: "secondary" as const,
-        title: "Startup Valuations Soar Despite Market Volatility",
-        author: "Robert Kim",
-        content: [
-          "Venture capital continues flowing to promising tech ventures as investors bet on post-pandemic innovation boom and transformative technologies.",
-          "Industry analysts point to artificial intelligence, biotechnology, and sustainable energy sectors as driving forces behind unprecedented investment activity."
-        ],
-        minHeight: "350px"
-      },
-      {
-        category: "Economy",
-        categoryColor: "secondary" as const,
-        title: "Federal Reserve Signals Potential Rate Changes",
-        author: "Sarah Williams",
-        content: [
-          "Economic indicators prompt discussions about monetary policy adjustments as officials balance growth concerns with inflation pressures.",
-          "Market analysts are closely watching upcoming statements for clues about the central bank's strategy in navigating current economic conditions."
-        ],
-        minHeight: "300px"
-      }
-    ]
-  },
-  {
-    id: 3,
-    direction: "down" as const,
-    articles: [
-      {
-        category: "Science",
-        categoryColor: "secondary" as const,
-        title: "Breakthrough in Quantum Computing Research",
-        author: "Dr. Lisa Wang",
-        content: [
-          "Researchers achieve major milestone in quantum error correction, bringing practical quantum computers closer to reality than ever before.",
-          "The breakthrough could revolutionize fields from drug discovery to cryptography, solving problems that are currently impossible for classical computers.",
-          "Leading tech companies are already racing to commercialize the technology, with experts predicting widespread applications within the next decade."
-        ],
-        minHeight: "450px"
-      },
-      {
-        category: "Health",
-        categoryColor: "secondary" as const,
-        title: "New Medical Study Reveals Promising Treatment",
-        author: "Dr. James Mitchell",
-        content: [
-          "Clinical trials show remarkable results for novel therapy targeting previously untreatable conditions, offering hope to millions of patients worldwide.",
-          "The treatment has shown minimal side effects while demonstrating significant efficacy across diverse patient populations."
-        ],
-        minHeight: "350px"
-      },
-      {
-        category: "Education",
-        categoryColor: "secondary" as const,
-        title: "Universities Embrace Hybrid Learning Models",
-        author: "Amanda Foster",
-        content: [
-          "Educational institutions worldwide adapt to changing student needs by combining traditional classroom instruction with innovative digital platforms.",
-          "Early results suggest improved student engagement and learning outcomes across multiple disciplines."
-        ],
-        minHeight: "300px"
-      }
-    ]
-  },
-  {
-    id: 4,
-    direction: "up" as const,
-    articles: [
-      {
-        category: "Sports",
-        categoryColor: "secondary" as const,
-        title: "Underdog Team Clinches Championship Title",
-        author: "Marcus Thompson",
-        content: [
-          "In a stunning upset, the season's lowest-ranked team defeats defending champions in dramatic finale that will be remembered for generations.",
-          "The victory came down to the final seconds, with spectacular plays from previously unknown athletes who rose to the occasion when it mattered most.",
-          "Fans flooded the streets in celebration as the city experienced its first championship win in over three decades, marking a historic moment for the franchise.",
-          "Team management credits the success to a combination of strategic coaching decisions, player development, and unwavering community support throughout the challenging season."
-        ],
-        minHeight: "600px"
-      },
-      {
-        category: "Entertainment",
-        categoryColor: "secondary" as const,
-        title: "Record-Breaking Film Dominates Box Office",
-        author: "Jessica Martinez",
-        content: [
-          "Latest blockbuster shatters opening weekend records, demonstrating continued appetite for theatrical experiences despite streaming competition.",
-          "Critics praise the film's innovative storytelling and groundbreaking visual effects that push the boundaries of cinema."
-        ],
-        minHeight: "350px"
-      },
-      {
-        category: "Culture",
-        categoryColor: "secondary" as const,
-        title: "Museum Unveils Rare Historical Collection",
-        author: "Thomas Anderson",
-        content: [
-          "Previously unseen artifacts from ancient civilization go on public display, offering new insights into historical mysteries that have puzzled scholars for centuries.",
-          "The exhibition features interactive elements that bring history to life for visitors of all ages."
-        ],
-        minHeight: "300px"
-      }
-    ]
-  }
-];
+// Article column data from JSON
+const articleColumns = articlesData.columns;
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -439,23 +265,22 @@ const Index = () => {
                       const articleId = `${column.id}-${idx}`;
                       const isHighlighted = highlightedArticle === articleId;
                       const isExpanded = expandedArticle === articleId;
-                      const hasOtherExpanded = expandedArticle && expandedArticle !== articleId;
                       
                       return (
                       <div key={articleId}>
                         <article 
                           data-article-id={articleId}
-                          className={`mb-8 transition-all duration-500 ${!hasOtherExpanded ? 'cursor-pointer' : 'cursor-default opacity-50'} ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+                          className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
                           onClick={(e) => {
-                            if (hasOtherExpanded) return;
-                            
-                            // Pause column animation
+                            // If another article is expanded, close it and open this one
                             setPausedColumns(new Set([column.id]));
-                            
-                            // Set expanded article and media
                             setExpandedArticle(articleId);
+                            
+                            // Set media if available
                             if ('videoId' in article && article.videoId) {
                               setMediaArticle(article);
+                            } else {
+                              setMediaArticle(null);
                             }
                             
                             // Scroll to show full article from top
@@ -470,7 +295,7 @@ const Index = () => {
                             }
                           }}
                           onMouseEnter={(e) => {
-                            if (hasOtherExpanded || isHighlighted) return;
+                            if (isHighlighted) return;
                             
                             const articleElement = e.currentTarget;
                             const scrollContainer = articleElement.closest('.article-container');
@@ -509,12 +334,14 @@ const Index = () => {
                               <button 
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (hasOtherExpanded) return;
                                   
                                   setPausedColumns(new Set([column.id]));
                                   setExpandedArticle(articleId);
+                                  
                                   if ('videoId' in article && article.videoId) {
                                     setMediaArticle(article);
+                                  } else {
+                                    setMediaArticle(null);
                                   }
                                   
                                   const articleElement = e.currentTarget.closest('article');
@@ -544,19 +371,19 @@ const Index = () => {
                       const articleId = `${column.id}-${idx}`;
                       const isHighlighted = highlightedArticle === articleId;
                       const isExpanded = expandedArticle === articleId;
-                      const hasOtherExpanded = expandedArticle && expandedArticle !== articleId;
                       
                       return (
                       <div key={`${column.id}-dup-${idx}`}>
                         <article 
-                          className={`mb-8 transition-all duration-500 ${!hasOtherExpanded ? 'cursor-pointer' : 'cursor-default opacity-50'} ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+                          className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
                           onClick={(e) => {
-                            if (hasOtherExpanded) return;
-                            
                             setPausedColumns(new Set([column.id]));
                             setExpandedArticle(articleId);
+                            
                             if ('videoId' in article && article.videoId) {
                               setMediaArticle(article);
+                            } else {
+                              setMediaArticle(null);
                             }
                             
                             const articleElement = e.currentTarget;
@@ -570,7 +397,7 @@ const Index = () => {
                             }
                           }}
                           onMouseEnter={(e) => {
-                            if (hasOtherExpanded || isHighlighted) return;
+                            if (isHighlighted) return;
                             
                             const articleElement = e.currentTarget;
                             const scrollContainer = articleElement.closest('.article-container');
@@ -609,12 +436,14 @@ const Index = () => {
                               <button 
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (hasOtherExpanded) return;
                                   
                                   setPausedColumns(new Set([column.id]));
                                   setExpandedArticle(articleId);
+                                  
                                   if ('videoId' in article && article.videoId) {
                                     setMediaArticle(article);
+                                  } else {
+                                    setMediaArticle(null);
                                   }
                                   
                                   const articleElement = e.currentTarget.closest('article');
@@ -706,19 +535,61 @@ const Index = () => {
             </h4>
             <div className="px-4 pb-4 overflow-auto">
               <ul className="space-y-3">
-                {[
-                  { title: "Market Analysis: What Investors Need to Know", category: "Business", categoryColor: "secondary" as const, author: "Robert Kim", content: ["Venture capital continues flowing to promising tech ventures as investors bet on post-pandemic innovation boom and transformative technologies.", "Industry analysts point to artificial intelligence, biotechnology, and sustainable energy sectors as driving forces behind unprecedented investment activity."], videoId: "dQw4w9WgXcQ" },
-                  { title: "Education Reform: New Proposals Emerge", category: "Education", categoryColor: "secondary" as const, author: "Amanda Foster", content: ["Educational institutions worldwide adapt to changing student needs by combining traditional classroom instruction with innovative digital platforms.", "Early results suggest improved student engagement and learning outcomes across multiple disciplines."] },
-                  { title: "Championship Finals Preview", category: "Sports", categoryColor: "secondary" as const, author: "Marcus Thompson", content: ["In a stunning upset, the season's lowest-ranked team defeats defending champions in dramatic finale that will be remembered for generations.", "The victory came down to the final seconds, with spectacular plays from previously unknown athletes who rose to the occasion when it mattered most."], videoId: "dQw4w9WgXcQ" },
-                  { title: "Museum Exhibition Opens", category: "Culture", categoryColor: "secondary" as const, author: "Thomas Anderson", content: ["Previously unseen artifacts from ancient civilization go on public display, offering new insights into historical mysteries that have puzzled scholars for centuries.", "The exhibition features interactive elements that bring history to life for visitors of all ages."] },
-                  { title: "Breakthrough in Medical Research", category: "Health", categoryColor: "secondary" as const, author: "Dr. James Mitchell", content: ["Clinical trials show remarkable results for novel therapy targeting previously untreatable conditions, offering hope to millions of patients worldwide.", "The treatment has shown minimal side effects while demonstrating significant efficacy across diverse patient populations."], videoId: "dQw4w9WgXcQ" }
-                ].map((item, index) => (
+                {articlesData.trending.map((item, index) => (
                   <li 
                     key={index} 
                     className="flex items-start cursor-pointer hover:bg-background/50 p-2 rounded transition-colors"
                     onClick={() => {
-                      if ('videoId' in item && item.videoId) {
-                        setMediaArticle(item);
+                      // Find the article in the main columns
+                      let foundArticle = null;
+                      let foundColumnId = null;
+                      let foundArticleIndex = null;
+                      let foundColumnIndex = null;
+                      
+                      articleColumns.forEach((col, colIdx) => {
+                        col.articles.forEach((art, artIdx) => {
+                          if (art.title === item.title) {
+                            foundArticle = art;
+                            foundColumnId = col.id;
+                            foundArticleIndex = artIdx;
+                            foundColumnIndex = colIdx;
+                          }
+                        });
+                      });
+                      
+                      if (foundArticle && foundColumnId !== null && foundArticleIndex !== null) {
+                        const articleId = `${foundColumnId}-${foundArticleIndex}`;
+                        
+                        // Navigate to the page with the article
+                        const pageIndex = Math.floor(foundColumnIndex / columnsPerPage);
+                        if (pageIndex !== currentPage) {
+                          setCurrentPage(pageIndex);
+                        }
+                        
+                        // Set expanded and media
+                        setPausedColumns(new Set([foundColumnId]));
+                        setExpandedArticle(articleId);
+                        
+                        if ('videoId' in foundArticle && foundArticle.videoId) {
+                          setMediaArticle(foundArticle);
+                        } else {
+                          setMediaArticle(null);
+                        }
+                        
+                        // Scroll to article after navigation
+                        setTimeout(() => {
+                          const articleElement = document.querySelector(`[data-article-id="${articleId}"]`) as HTMLElement;
+                          if (articleElement) {
+                            const scrollViewport = articleElement.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
+                            if (scrollViewport) {
+                              const viewportRect = scrollViewport.getBoundingClientRect();
+                              const articleRect = articleElement.getBoundingClientRect();
+                              const currentScrollTop = scrollViewport.scrollTop;
+                              const targetScroll = currentScrollTop + (articleRect.top - viewportRect.top) - 20;
+                              scrollViewport.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+                            }
+                          }
+                        }, pageIndex !== currentPage ? 600 : 100);
                       }
                     }}
                   >

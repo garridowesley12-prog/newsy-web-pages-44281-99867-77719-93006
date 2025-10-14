@@ -1,0 +1,223 @@
+{
+  "columns": [
+    {
+      "id": 1,
+      "direction": "down",
+      "articles": [
+        {
+          "category": "Politics",
+          "categoryColor": "secondary",
+          "title": "Senate Committee Advances Landmark Infrastructure Bill",
+          "author": "Margaret Chen",
+          "content": [
+            "After months of negotiations, bipartisan support emerges for comprehensive infrastructure package aimed at modernizing transportation networks and creating thousands of new jobs across the country.",
+            "The legislation, which has been years in the making, represents one of the most significant investments in America's infrastructure since the Interstate Highway System.",
+            "Key provisions include funding for roads, bridges, broadband expansion, and climate resilience initiatives. Economists predict substantial long-term economic benefits from the modernization efforts."
+          ]
+        },
+        {
+          "category": "Technology",
+          "categoryColor": "secondary",
+          "title": "Tech Giants Face New Regulatory Scrutiny",
+          "author": "David Park",
+          "content": [
+            "Lawmakers propose sweeping changes to digital privacy laws as concerns mount over data collection practices and market dominance of major technology companies.",
+            "The proposed regulations would fundamentally reshape how tech companies operate, introducing strict requirements for data transparency and user consent."
+          ]
+        },
+        {
+          "category": "Technology",
+          "categoryColor": "accent",
+          "title": "Revolutionary AI Model Transforms Creative Industries",
+          "author": "Alex Thompson",
+          "content": [
+            "A groundbreaking artificial intelligence system is reshaping how creative professionals work, offering unprecedented capabilities in content generation and design assistance.",
+            "Industry experts demonstrate the technology's potential in this exclusive presentation, showcasing real-world applications across multiple creative fields."
+          ],
+          "videoId": "dQw4w9WgXcQ"
+        },
+        {
+          "category": "Local",
+          "categoryColor": "secondary",
+          "title": "City Council Approves New Park Development",
+          "author": "Local Desk",
+          "content": [
+            "Downtown expansion includes green spaces and community centers in ambitious urban renewal project that aims to bring nature back to the city's core.",
+            "The development will feature walking trails, playgrounds, and public art installations designed by local artists."
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "direction": "up",
+      "articles": [
+        {
+          "category": "Breaking",
+          "categoryColor": "accent",
+          "title": "Historic Climate Accord Signed by 150 Nations",
+          "author": "Elena Rodriguez",
+          "content": [
+            "World leaders convene to commit to ambitious emissions targets in effort to combat accelerating environmental changes. The landmark agreement represents a pivotal moment in international cooperation.",
+            "Scientists and environmental advocates have praised the comprehensive nature of the accord, which includes binding commitments for carbon reduction, renewable energy adoption, and financial support for developing nations.",
+            "The agreement comes after intensive negotiations spanning multiple continents and represents a unified global response to the climate crisis that has been decades in the making.",
+            "Implementation begins next quarter with initial reporting requirements and verification mechanisms to ensure compliance across all participating nations."
+          ]
+        },
+        {
+          "category": "Business",
+          "categoryColor": "secondary",
+          "title": "Startup Valuations Soar Despite Market Volatility",
+          "author": "Robert Kim",
+          "content": [
+            "Venture capital continues flowing to promising tech ventures as investors bet on post-pandemic innovation boom and transformative technologies.",
+            "Industry analysts point to artificial intelligence, biotechnology, and sustainable energy sectors as driving forces behind unprecedented investment activity."
+          ]
+        },
+        {
+          "category": "Economy",
+          "categoryColor": "secondary",
+          "title": "Federal Reserve Signals Potential Rate Changes",
+          "author": "Sarah Williams",
+          "content": [
+            "Economic indicators prompt discussions about monetary policy adjustments as officials balance growth concerns with inflation pressures.",
+            "Market analysts are closely watching upcoming statements for clues about the central bank's strategy in navigating current economic conditions."
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "direction": "down",
+      "articles": [
+        {
+          "category": "Science",
+          "categoryColor": "secondary",
+          "title": "Breakthrough in Quantum Computing Research",
+          "author": "Dr. Lisa Wang",
+          "content": [
+            "Researchers achieve major milestone in quantum error correction, bringing practical quantum computers closer to reality than ever before.",
+            "The breakthrough could revolutionize fields from drug discovery to cryptography, solving problems that are currently impossible for classical computers.",
+            "Leading tech companies are already racing to commercialize the technology, with experts predicting widespread applications within the next decade."
+          ]
+        },
+        {
+          "category": "Health",
+          "categoryColor": "secondary",
+          "title": "New Medical Study Reveals Promising Treatment",
+          "author": "Dr. James Mitchell",
+          "content": [
+            "Clinical trials show remarkable results for novel therapy targeting previously untreatable conditions, offering hope to millions of patients worldwide.",
+            "The treatment has shown minimal side effects while demonstrating significant efficacy across diverse patient populations."
+          ],
+          "videoId": "dQw4w9WgXcQ"
+        },
+        {
+          "category": "Education",
+          "categoryColor": "secondary",
+          "title": "Universities Embrace Hybrid Learning Models",
+          "author": "Amanda Foster",
+          "content": [
+            "Educational institutions worldwide adapt to changing student needs by combining traditional classroom instruction with innovative digital platforms.",
+            "Early results suggest improved student engagement and learning outcomes across multiple disciplines."
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "direction": "up",
+      "articles": [
+        {
+          "category": "Sports",
+          "categoryColor": "secondary",
+          "title": "Underdog Team Clinches Championship Title",
+          "author": "Marcus Thompson",
+          "content": [
+            "In a stunning upset, the season's lowest-ranked team defeats defending champions in dramatic finale that will be remembered for generations.",
+            "The victory came down to the final seconds, with spectacular plays from previously unknown athletes who rose to the occasion when it mattered most.",
+            "Fans flooded the streets in celebration as the city experienced its first championship win in over three decades, marking a historic moment for the franchise.",
+            "Team management credits the success to a combination of strategic coaching decisions, player development, and unwavering community support throughout the challenging season."
+          ],
+          "videoId": "dQw4w9WgXcQ"
+        },
+        {
+          "category": "Entertainment",
+          "categoryColor": "secondary",
+          "title": "Record-Breaking Film Dominates Box Office",
+          "author": "Jessica Martinez",
+          "content": [
+            "Latest blockbuster shatters opening weekend records, demonstrating continued appetite for theatrical experiences despite streaming competition.",
+            "Critics praise the film's innovative storytelling and groundbreaking visual effects that push the boundaries of cinema."
+          ]
+        },
+        {
+          "category": "Culture",
+          "categoryColor": "secondary",
+          "title": "Museum Unveils Rare Historical Collection",
+          "author": "Thomas Anderson",
+          "content": [
+            "Previously unseen artifacts from ancient civilization go on public display, offering new insights into historical mysteries that have puzzled scholars for centuries.",
+            "The exhibition features interactive elements that bring history to life for visitors of all ages."
+          ]
+        }
+      ]
+    }
+  ],
+  "trending": [
+    {
+      "title": "Startup Valuations Soar Despite Market Volatility",
+      "category": "Business",
+      "categoryColor": "secondary",
+      "author": "Robert Kim",
+      "content": [
+        "Venture capital continues flowing to promising tech ventures as investors bet on post-pandemic innovation boom and transformative technologies.",
+        "Industry analysts point to artificial intelligence, biotechnology, and sustainable energy sectors as driving forces behind unprecedented investment activity."
+      ]
+    },
+    {
+      "title": "Universities Embrace Hybrid Learning Models",
+      "category": "Education",
+      "categoryColor": "secondary",
+      "author": "Amanda Foster",
+      "content": [
+        "Educational institutions worldwide adapt to changing student needs by combining traditional classroom instruction with innovative digital platforms.",
+        "Early results suggest improved student engagement and learning outcomes across multiple disciplines."
+      ]
+    },
+    {
+      "title": "Underdog Team Clinches Championship Title",
+      "category": "Sports",
+      "categoryColor": "secondary",
+      "author": "Marcus Thompson",
+      "content": [
+        "In a stunning upset, the season's lowest-ranked team defeats defending champions in dramatic finale that will be remembered for generations.",
+        "The victory came down to the final seconds, with spectacular plays from previously unknown athletes who rose to the occasion when it mattered most.",
+        "Fans flooded the streets in celebration as the city experienced its first championship win in over three decades, marking a historic moment for the franchise.",
+        "Team management credits the success to a combination of strategic coaching decisions, player development, and unwavering community support throughout the challenging season."
+      ],
+      "videoId": "dQw4w9WgXcQ"
+    },
+    {
+      "title": "Museum Unveils Rare Historical Collection",
+      "category": "Culture",
+      "categoryColor": "secondary",
+      "author": "Thomas Anderson",
+      "content": [
+        "Previously unseen artifacts from ancient civilization go on public display, offering new insights into historical mysteries that have puzzled scholars for centuries.",
+        "The exhibition features interactive elements that bring history to life for visitors of all ages."
+      ]
+    },
+    {
+      "title": "New Medical Study Reveals Promising Treatment",
+      "category": "Health",
+      "categoryColor": "secondary",
+      "author": "Dr. James Mitchell",
+      "content": [
+        "Clinical trials show remarkable results for novel therapy targeting previously untreatable conditions, offering hope to millions of patients worldwide.",
+        "The treatment has shown minimal side effects while demonstrating significant efficacy across diverse patient populations."
+      ],
+      "videoId": "dQw4w9WgXcQ"
+    }
+  ]
+}
