@@ -338,6 +338,61 @@
         "Clinical trials show remarkable results for novel therapy targeting previously untreatable conditions, offering hope to millions of patients worldwide.",
         "The treatment has shown minimal side effects while demonstrating significant efficacy across diverse patient populations."
       ]
+    },
+    {
+      "title": "Senate Committee Advances Landmark Infrastructure Bill",
+      "category": "Politics",
+      "categoryColor": "secondary",
+      "author": "Margaret Chen",
+      "date": "2025-10-14",
+      "videoId": "dQw4w9WgXcQ",
+      "content": [
+        "After months of negotiations, bipartisan support emerges for comprehensive infrastructure package aimed at modernizing transportation networks and creating thousands of new jobs across the country."
+      ]
+    },
+    {
+      "title": "Renewable Energy Surpasses Coal in Power Generation",
+      "category": "Climate",
+      "categoryColor": "secondary",
+      "author": "Robert Kim",
+      "date": "2025-10-14",
+      "videoId": "dQw4w9WgXcQ",
+      "content": [
+        "Solar and wind power installations reach historic highs as clean energy becomes more cost-effective than fossil fuels in most markets."
+      ]
+    },
+    {
+      "title": "5G Networks Enable Smart City Infrastructure",
+      "category": "Technology",
+      "categoryColor": "secondary",
+      "author": "Dr. James Mitchell",
+      "date": "2025-10-14",
+      "videoId": "dQw4w9WgXcQ",
+      "content": [
+        "High-speed wireless connectivity transforms urban management with real-time data analytics for traffic, utilities, and emergency services."
+      ]
+    },
+    {
+      "title": "Olympic Athlete Breaks World Record",
+      "category": "Sports",
+      "categoryColor": "secondary",
+      "author": "Jessica Martinez",
+      "date": "2025-10-14",
+      "videoId": "dQw4w9WgXcQ",
+      "content": [
+        "Track and field sensation achieves unprecedented time in 100-meter sprint, breaking a record that stood for over a decade."
+      ]
+    },
+    {
+      "title": "Corporate Mergers Reshape Industry Landscape",
+      "category": "Business",
+      "categoryColor": "secondary",
+      "author": "Michelle Lee",
+      "date": "2025-10-14",
+      "videoId": "dQw4w9WgXcQ",
+      "content": [
+        "Major consolidation wave transforms competitive dynamics as companies seek scale advantages in global marketplace."
+      ]
     }
   ]
 }

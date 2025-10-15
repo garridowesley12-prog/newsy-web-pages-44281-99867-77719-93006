@@ -12,7 +12,7 @@ import articlesData from "@/data/articles.json";
 const YouTubeEmbed = ({ videoId }: { videoId: string }) => (
   <div className="relative w-full aspect-video rounded overflow-hidden my-4 border border-border">
     <iframe
-      src={`https://www.youtube.com/embed/${videoId}`}
+      src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
       title="YouTube video player"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowFullScreen
@@ -267,8 +267,8 @@ const Index = () => {
                   style={pausedColumns.has(column.id) ? { animation: 'none' } : undefined}
                 >
                   {/* Category Header */}
-                  <div className="mb-8 pb-4 border-b-2 border-border sticky top-0 bg-background z-10">
-                    <h2 className="font-headline font-bold text-3xl uppercase tracking-wide">
+                  <div className="mb-8 pb-4 border-b-2 border-border sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
+                    <h2 className="font-headline font-bold text-xs uppercase tracking-wide">
                       {column.category}
                     </h2>
                   </div>
@@ -322,7 +322,7 @@ const Index = () => {
                             }
                           }}
                         >
-                          <h3 className={`font-headline font-bold leading-tight mb-3 text-2xl`}>
+                          <h3 className={`font-headline font-bold leading-tight mb-3 text-base sm:text-lg md:text-xl lg:text-2xl`}>
                             {article.title}
                           </h3>
                           <p className="text-sm font-body leading-relaxed text-muted-foreground mb-2">
@@ -496,7 +496,7 @@ const Index = () => {
             onMouseLeave={() => setIsMediaHovered(false)}
           >
             <div className="flex items-center justify-between border-b-2 border-foreground pb-2 px-3 pt-3">
-              <h4 className="font-headline font-bold text-xl">
+              <h4 className="font-headline font-bold text-sm sm:text-base md:text-lg lg:text-xl">
                 MEDIA
               </h4>
               {mediaArticle && (
@@ -538,11 +538,11 @@ const Index = () => {
             onMouseEnter={() => setIsTrendingHovered(true)}
             onMouseLeave={() => setIsTrendingHovered(false)}
           >
-            <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2 px-3 pt-3">
+            <h4 className="font-headline font-bold text-sm sm:text-base md:text-lg lg:text-xl mb-2 border-b-2 border-foreground pb-2 px-3 pt-3">
               TRENDING NOW
             </h4>
             <div className="px-3 pb-3 overflow-auto">
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {articlesData.trending.map((item, index) => (
                   <li 
                     key={index} 
@@ -609,8 +609,8 @@ const Index = () => {
                       }
                     }}
                   >
-                    <span className="font-headline font-bold text-lg mr-3 text-primary">{index + 1}.</span>
-                    <span className="text-sm font-body leading-tight">{item.title}</span>
+                    <span className="font-headline font-bold text-xs mr-2 text-primary">{index + 1}.</span>
+                    <span className="text-[10px] font-body leading-tight">{item.title}</span>
                   </li>
                 ))}
               </ul>
