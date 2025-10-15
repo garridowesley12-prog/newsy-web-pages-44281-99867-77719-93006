@@ -21,8 +21,15 @@ const YouTubeEmbed = ({ videoId }: { videoId: string }) => (
   </div>
 );
 
-// Article column data from JSON
-const articleColumns = articlesData.columns;
+// Article column data from JSON - sort articles by date descending
+const articleColumns = articlesData.columns.map(column => ({
+  ...column,
+  articles: [...column.articles].sort((a, b) => {
+    const dateA = new Date(a.date || '2000-01-01').getTime();
+    const dateB = new Date(b.date || '2000-01-01').getTime();
+    return dateB - dateA; // descending order (newest first)
+  })
+}));
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -259,6 +266,13 @@ const Index = () => {
                   className={`p-8 ${!pausedColumns.has(column.id) ? `auto-scroll-${column.direction}` : ''}`}
                   style={pausedColumns.has(column.id) ? { animation: 'none' } : undefined}
                 >
+                  {/* Category Header */}
+                  <div className="mb-8 pb-4 border-b-2 border-border sticky top-0 bg-background z-10">
+                    <h2 className="font-headline font-bold text-3xl uppercase tracking-wide">
+                      {column.category}
+                    </h2>
+                  </div>
+                  
                   <div className="pb-8">
                     {/* Render articles */}
                      {column.articles.map((article, idx) => {
@@ -308,9 +322,6 @@ const Index = () => {
                             }
                           }}
                         >
-                          <Badge className={`mb-2 bg-${article.categoryColor} text-${article.categoryColor}-foreground font-body uppercase text-xs`}>
-                            {article.category}
-                          </Badge>
                           <h3 className={`font-headline font-bold leading-tight mb-3 text-2xl`}>
                             {article.title}
                           </h3>
@@ -410,9 +421,6 @@ const Index = () => {
                             }
                           }}
                         >
-                          <Badge className={`mb-2 bg-${article.categoryColor} text-${article.categoryColor}-foreground font-body uppercase text-xs`}>
-                            {article.category}
-                          </Badge>
                           <h3 className={`font-headline font-bold leading-tight mb-3 text-2xl`}>
                             {article.title}
                           </h3>
@@ -475,7 +483,7 @@ const Index = () => {
         </div>
 
         {/* Sidebar - Media and Trending */}
-        <div className="h-full w-[45vw] border-l border-border p-8 flex flex-col gap-6 overflow-hidden">
+        <div className="h-full w-[45vw] border-l border-border p-4 flex flex-col gap-4 overflow-hidden">
           {/* Media Section */}
           <Card 
             className="bg-muted border-2 border-border flex flex-col overflow-hidden transition-all duration-500" 
@@ -487,7 +495,7 @@ const Index = () => {
             onMouseEnter={() => setIsMediaHovered(true)}
             onMouseLeave={() => setIsMediaHovered(false)}
           >
-            <div className="flex items-center justify-between border-b-2 border-foreground pb-2 px-4 pt-4">
+            <div className="flex items-center justify-between border-b-2 border-foreground pb-2 px-3 pt-3">
               <h4 className="font-headline font-bold text-xl">
                 MEDIA
               </h4>
@@ -505,13 +513,13 @@ const Index = () => {
               )}
             </div>
             {mediaArticle ? (
-              <ScrollArea className="flex-1 px-4 pb-4 pt-4">
+              <ScrollArea className="flex-1 px-3 pb-3 pt-3">
                 {'videoId' in mediaArticle && mediaArticle.videoId && (
                   <YouTubeEmbed videoId={mediaArticle.videoId} />
                 )}
               </ScrollArea>
             ) : (
-              <div className="flex items-center justify-center flex-1 p-8">
+              <div className="flex items-center justify-center flex-1 p-3">
                 <p className="text-muted-foreground font-body text-center">
                   Click an article to display media here
                 </p>
@@ -530,10 +538,10 @@ const Index = () => {
             onMouseEnter={() => setIsTrendingHovered(true)}
             onMouseLeave={() => setIsTrendingHovered(false)}
           >
-            <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2 px-4 pt-4">
+            <h4 className="font-headline font-bold text-xl mb-4 border-b-2 border-foreground pb-2 px-3 pt-3">
               TRENDING NOW
             </h4>
-            <div className="px-4 pb-4 overflow-auto">
+            <div className="px-3 pb-3 overflow-auto">
               <ul className="space-y-3">
                 {articlesData.trending.map((item, index) => (
                   <li 
@@ -566,9 +574,12 @@ const Index = () => {
                           setCurrentPage(pageIndex);
                         }
                         
-                        // Set expanded and media
+                        // Set expanded and media, minimize trending and expand media
                         setPausedColumns(new Set([foundColumnId]));
                         setExpandedArticle(articleId);
+                        setHighlightedArticle(articleId);
+                        setIsMediaHovered(true);
+                        setIsTrendingHovered(false);
                         
                         if ('videoId' in foundArticle && foundArticle.videoId) {
                           setMediaArticle(foundArticle);
@@ -589,6 +600,11 @@ const Index = () => {
                               scrollViewport.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
                             }
                           }
+                          
+                          // Clear highlight after 3 seconds
+                          setTimeout(() => {
+                            setHighlightedArticle(null);
+                          }, 3000);
                         }, pageIndex !== currentPage ? 600 : 100);
                       }
                     }}
