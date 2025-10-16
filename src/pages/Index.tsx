@@ -387,7 +387,8 @@ const Index = () => {
                           </article>
                           {idx < column.articles.length - 1 && <Separator className="my-6" />}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
               </ScrollArea>
