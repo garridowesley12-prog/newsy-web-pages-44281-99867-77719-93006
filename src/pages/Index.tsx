@@ -31,6 +31,15 @@ const articleColumns = articlesData.columns.map(column => ({
   })
 }));
 
+// Get trending articles from all columns based on trending property and expiration
+const getTrendingArticles = () => {
+  const now = new Date();
+  return articleColumns
+    .flatMap(col => col.articles)
+    .filter((article: any) => article.trending && new Date(article.trendingUntil) > now)
+    .slice(0, 10); // Max 10 trending articles
+};
+
 const Index = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,6 +50,7 @@ const Index = () => {
   const [mediaArticle, setMediaArticle] = useState<any>(null);
   const [isMediaHovered, setIsMediaHovered] = useState(false);
   const [isTrendingHovered, setIsTrendingHovered] = useState(false);
+  const [trendingArticles, setTrendingArticles] = useState(getTrendingArticles());
   const columnsPerPage = 2;
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isWheeling = useRef(false);
@@ -261,30 +271,33 @@ const Index = () => {
           {/* Article Columns */}
           <div className="flex flex-1 overflow-hidden">
             {visibleColumns.map((column) => (
-              <ScrollArea key={column.id} className="article-container h-full border-r border-border flex-1">
-                <div 
-                  className={`p-8 ${!pausedColumns.has(column.id) ? `auto-scroll-${column.direction}` : ''}`}
-                  style={pausedColumns.has(column.id) ? { animation: 'none' } : undefined}
-                >
-                  {/* Category Header */}
-                  <div className="mb-8 pb-4 border-b-2 border-border sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
-                    <h2 className="font-headline font-bold text-xs uppercase tracking-wide">
-                      {column.category}
-                    </h2>
-                  </div>
-                  
-                  <div className="pb-8">
-                    {/* Render articles */}
-                     {column.articles.map((article, idx) => {
-                      const articleId = `${column.id}-${idx}`;
-                      const isHighlighted = highlightedArticle === articleId;
-                      const isExpanded = expandedArticle === articleId;
-                      
-                      return (
-                      <div key={articleId}>
-                        <article 
-                          data-article-id={articleId}
-                          className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
+              <div key={column.id} className="article-container h-full border-r border-border flex-1 flex flex-col">
+                {/* Category Header - sticky at top */}
+                <div className="px-8 pt-6 pb-4 border-b-2 border-border bg-background z-10">
+                  <h2 className="font-headline font-bold text-xs uppercase tracking-wide">
+                    {column.category}
+                  </h2>
+                </div>
+                
+                <ScrollArea className="flex-1">
+                  <div 
+                    className={`p-8 ${!pausedColumns.has(column.id) ? `auto-scroll-${column.direction}` : ''}`}
+                    style={pausedColumns.has(column.id) ? { animation: 'none' } : undefined}
+                  >
+                    <div className="pb-8">
+                      {/* Render articles */}
+                      {column.articles.map((article, idx) => {
+                        const articleId = `${column.id}-${idx}`;
+                        // Highlight if: search result OR media is playing for this article
+                        const isMediaPlaying = mediaArticle?.title === article.title && mediaArticle?.author === article.author;
+                        const isHighlighted = highlightedArticle === articleId || isMediaPlaying;
+                        const isExpanded = expandedArticle === articleId;
+                        
+                        return (
+                          <div key={articleId}>
+                            <article
+                              data-article-id={articleId}
+                              className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
                           onClick={(e) => {
                             // If another article is expanded, close it and open this one
                             setPausedColumns(new Set([column.id]));
@@ -371,113 +384,14 @@ const Index = () => {
                               </button>
                             </>
                           )}
-                        </article>
-                        {idx < column.articles.length - 1 && <Separator className="my-6" />}
-                      </div>
-                    )}
-                    )}
-                    
-                    {/* Duplicate content for seamless loop */}
-                    {column.articles.map((article, idx) => {
-                      const articleId = `${column.id}-${idx}`;
-                      const isHighlighted = highlightedArticle === articleId;
-                      const isExpanded = expandedArticle === articleId;
-                      
-                      return (
-                      <div key={`${column.id}-dup-${idx}`}>
-                        <article 
-                          className={`mb-8 transition-all duration-500 cursor-pointer ${isHighlighted ? 'ring-4 ring-primary ring-offset-4 rounded-lg p-4 bg-primary/5' : ''}`}
-                          onClick={(e) => {
-                            setPausedColumns(new Set([column.id]));
-                            setExpandedArticle(articleId);
-                            
-                            if ('videoId' in article && article.videoId) {
-                              setMediaArticle(article);
-                            } else {
-                              setMediaArticle(null);
-                            }
-                            
-                            const articleElement = e.currentTarget;
-                            const scrollViewport = articleElement.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
-                            if (scrollViewport) {
-                              const viewportRect = scrollViewport.getBoundingClientRect();
-                              const articleRect = articleElement.getBoundingClientRect();
-                              const currentScrollTop = scrollViewport.scrollTop;
-                              const targetScroll = currentScrollTop + (articleRect.top - viewportRect.top) - 20;
-                              scrollViewport.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
-                            }
-                          }}
-                          onMouseEnter={(e) => {
-                            if (isHighlighted) return;
-                            
-                            const articleElement = e.currentTarget;
-                            const scrollContainer = articleElement.closest('.article-container');
-                            if (scrollContainer) {
-                              const containerRect = scrollContainer.getBoundingClientRect();
-                              const articleRect = articleElement.getBoundingClientRect();
-                              const scrollTop = scrollContainer.scrollTop;
-                              const targetScroll = scrollTop + articleRect.top - containerRect.top;
-                              scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                            }
-                          }}
-                        >
-                          <h3 className={`font-headline font-bold leading-tight mb-3 text-2xl`}>
-                            {article.title}
-                          </h3>
-                          <p className="text-sm font-body leading-relaxed text-muted-foreground mb-2">
-                            By {article.author}
-                          </p>
-                          
-                          {isExpanded ? (
-                            <div className="space-y-4">
-                              {article.content.map((paragraph: string, pIdx: number) => (
-                                <p key={pIdx} className="text-sm font-body leading-relaxed">
-                                  {paragraph}
-                                </p>
-                              ))}
-                            </div>
-                          ) : (
-                            <>
-                              <p className="text-sm font-body leading-relaxed">
-                                {article.content[0].split(' ').slice(0, 17).join(' ')}...
-                              </p>
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  
-                                  setPausedColumns(new Set([column.id]));
-                                  setExpandedArticle(articleId);
-                                  
-                                  if ('videoId' in article && article.videoId) {
-                                    setMediaArticle(article);
-                                  } else {
-                                    setMediaArticle(null);
-                                  }
-                                  
-                                  const articleElement = e.currentTarget.closest('article');
-                                  const scrollViewport = articleElement?.closest('[data-radix-scroll-area-viewport]') as HTMLElement;
-                                  if (scrollViewport && articleElement) {
-                                    const viewportRect = scrollViewport.getBoundingClientRect();
-                                    const articleRect = articleElement.getBoundingClientRect();
-                                    const currentScrollTop = scrollViewport.scrollTop;
-                                    const targetScroll = currentScrollTop + (articleRect.top - viewportRect.top) - 20;
-                                    scrollViewport.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
-                                  }
-                                }}
-                                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-2 font-body"
-                              >
-                                Continue reading →
-                              </button>
-                            </>
-                          )}
-                        </article>
-                        {idx < column.articles.length - 1 && <Separator className="my-6" />}
-                      </div>
-                    )}
-                    )}
+                          </article>
+                          {idx < column.articles.length - 1 && <Separator className="my-6" />}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
               </ScrollArea>
+            </div>
             ))}
           </div>
         </div>
@@ -543,7 +457,7 @@ const Index = () => {
             </h4>
             <div className="px-3 pb-3 overflow-auto">
               <ul className="space-y-2">
-                {articlesData.trending.map((item, index) => (
+                {trendingArticles.map((item, index) => (
                   <li 
                     key={index} 
                     className="flex items-start cursor-pointer hover:bg-background/50 p-2 rounded transition-colors"
